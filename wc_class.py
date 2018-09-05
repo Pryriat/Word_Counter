@@ -1,4 +1,5 @@
 class word_counter:
+	spe_char_set = ('{','}','(',')','#','<','>','/')
 	def isnull(file):
 	'''
 	判断文件是否为空
@@ -9,18 +10,23 @@ class word_counter:
 		if t == 0:
 			return false
 		return true
-		
+
 	def char_count(string_line):
+		'''
+		文件字符数统计
+		'''
 		char_num = 0
 		for x in string_line:
-			
-	'''
-	文件字符数统计
-	'''
+			if x not in spe_char_set:
+				char_num += 1
+		return char_num
+
+
 	def word_count(string_line):
 	'''
 	文件单词数统计
 	'''
+
 	def special_count(string_line):
 	'''
 	特殊字符统计
@@ -42,5 +48,3 @@ class word_counter:
 	'''
 	命令行参数处理
 	'''
-	
-		
