@@ -1,16 +1,21 @@
 #coding = UTF-8
 import re
 import codecs
+import getopt
+import argparse
+import sys
 class word_counter:
-	def __init__(self,file):
+	def __init__(self):
 		self.char_num = 0
 		self.word_num = 0
 		self.lines = 0
 		self.nullline = 0
 		self.single_comment = 0
 		self.multi_comment = 0
+		self.code_line = 0
 		self.is_null = False
-		self.file = file
+		self.file = ''
+		self.opt={}
 
 	def isnull(self,string):
 		'''
@@ -26,15 +31,13 @@ class word_counter:
 		'''
 		文件字符数统计
 		'''
-		char_pattern = re.compile('[a-zA-Z]')
-		tmp_result = char_pattern.findall(string)
-		return len(tmp_result)
+		return len(string)
 
 	def word_count(self,string):
 		'''
 		文件单词数统计
 		'''
-		word_pattern = re.compile('\w+')
+		word_pattern = re.compile('\S+\s?')
 		tmp_result = word_pattern.findall(string)
 		return len(tmp_result)
 
@@ -43,10 +46,10 @@ class word_counter:
 		文件行数统计与空行统计
 		'''
 		null_line = 0
-		sepcial_pattern = re.compile('.*')
+		sepcial_pattern = re.compile('.*\n')
 		tmp_result = sepcial_pattern.findall(string)
 		for lines in tmp_result:
-			if len(lines.replace(' ','').replace('\n','')) <= 1:
+			if len(lines.strip()) <= 1:
 				null_line += 1
 		return (len(tmp_result),null_line)
 
@@ -85,15 +88,36 @@ class word_counter:
 		'''
 		文件处理主函数
 		'''
+		self.file = self.opt['f']
 		with codecs.open(self.file, 'r', 'utf-8') as f:
 			self.file_string = f.read()
 		if self.isnull(self.file_string):
+			print('null file!')
 			return
 		else:
 			self.multi_comment = self.multi_comment_count(self.file_string)
+			self.single_comment = self.single_comment_count(self.file_string)
 			self.char_num += self.char_count(self.file_string)
 			self.word_num += self.word_count(self.file_string)
 			(self.lines,self.nullline) = self.line_count(self.file_string)
+			self.code_line = self.lines-self.single_comment-self.multi_comment-self.nullline
+			if self.opt['a'] :
+				print('character:'+str(self.char_num),end = ' ')
+				print('words:'+str(self.word_num),end=' ')
+				print('lines:'+str(self.lines),end=' ')
+				print('code_line:'+str(self.code_line),end=' ')
+				print('null_line:'+str(self.nullline),end=' ')
+				print('comment_line:'+str(self.single_comment+self.multi_comment))
+			else:
+				if not (self.opt['c'] or self.opt['w'] or self.opt['l']):
+					print('Please input command\n')
+					return
+				if self.opt['c']:
+					print('character:'+str(self.char_num),end = ' ')
+				if self.opt['w']:
+					print('words:'+str(self.word_num),end=' ')
+				if self.opt['l']:
+					print('lines:'+str(self.lines),end=' ')
 
 	def file_select(self):
 		'''
@@ -109,4 +133,15 @@ class word_counter:
 		'''
 		命令行参数处理
 		'''
-		pass
+		if len(sys.argv) == 1:
+			sys.argv.append('-h')
+		parser = argparse.ArgumentParser(description='Word_Counter by Chenobyl',add_help=True)
+		parser.add_argument('-c',help='character counts',action="store_true")
+		parser.add_argument('-w',help='word counts',action="store_true")
+		parser.add_argument('-l',help='line counts',action="store_true")
+		parser.add_argument('-a',help='extra informations',action="store_true")
+		parser.add_argument('-s',help='match  files',action="store_true")
+		parser.add_argument('-f',default=None,help='input file')
+		args = parser.parse_args()
+		for x,y in args._get_kwargs():
+			self.opt[x]=y
