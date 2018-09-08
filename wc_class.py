@@ -2,11 +2,11 @@
 import re
 import codecs
 import getopt
-import argparse
 import sys
 import glob
+
 class word_counter:
-	def __init__(self):
+	def __init__(self,opt):
 		self.char_num = 0
 		self.word_num = 0
 		self.lines = 0
@@ -16,7 +16,7 @@ class word_counter:
 		self.code_line = 0
 		self.is_null = False
 		self.file = ''
-		self.opt={}
+		self.opt=opt
 
 	def isnull(self,string):
 		'''
@@ -126,23 +126,5 @@ class word_counter:
 		for x in file_list:
 			self.file_process(x)
 	def ui_main(self):
-		'''
-		图形化界面的显示
-		'''
-		pass
-	def command_line_proc(self):
-		'''
-		命令行参数处理
-		'''
-		if len(sys.argv) == 1:
-			sys.argv.append('-h')
-		parser = argparse.ArgumentParser(description='Word_Counter by Chenobyl',add_help=True)
-		parser.add_argument('-c',help='character counts',action="store_true")
-		parser.add_argument('-w',help='word counts',action="store_true")
-		parser.add_argument('-l',help='line counts',action="store_true")
-		parser.add_argument('-a',help='extra informations',action="store_true")
-		parser.add_argument('-s',help='match  files',action="store_true")
-		parser.add_argument('-f',default=None,help='input file')
-		args = parser.parse_args()
-		for x,y in args._get_kwargs():
-			self.opt[x]=y
+		mw = QDialog()
+		mw.setWindowTitle('Word Counter by Chernobyl')
