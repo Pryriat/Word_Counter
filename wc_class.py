@@ -4,6 +4,7 @@ import codecs
 import getopt
 import argparse
 import sys
+import glob
 class word_counter:
 	def __init__(self):
 		self.char_num = 0
@@ -84,13 +85,13 @@ class word_counter:
 					multi_lines+=1
 		return multi_lines
 
-	def file_process(self):
+	def file_process(self,file):
 		'''
 		文件处理主函数
 		'''
-		self.file = self.opt['f']
-		with codecs.open(self.file, 'r', 'utf-8') as f:
+		with codecs.open(file, 'r', 'utf-8') as f:
 			self.file_string = f.read()
+		print('file:'+file,end=' ')
 		if self.isnull(self.file_string):
 			print('null file!')
 			return
@@ -120,10 +121,10 @@ class word_counter:
 					print('lines:'+str(self.lines),end=' ')
 
 	def file_select(self):
-		'''
-		文件的选择、通配符处理
-		'''
-		pass
+		print(self.opt['f'])
+		file_list = glob.glob(self.opt['f'])
+		for x in file_list:
+			self.file_process(x)
 	def ui_main(self):
 		'''
 		图形化界面的显示
