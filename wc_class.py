@@ -59,13 +59,14 @@ class word_counter:
 		单行注释统计
 		'''
 		re_pattern = re.compile('//')
-		del_pattern = re.compile('"+[^"]+//+[^"]+"')
+		del_pattern = re.compile('"[^"]*//[^"]*"')
 		multi_in_single_pattern = re.compile('/\*.*')
 		tmp_result1 = re_pattern.findall(string)
 		tmp_result2 = del_pattern.findall(string)
 		for lines in tmp_result1:
 			if len(multi_in_single_pattern.findall(lines)) == 1:
 				self.multi_comment -= 1
+		print('sig',len(tmp_result1) - len(tmp_result2))
 		return len(tmp_result1) - len(tmp_result2)
 
 
@@ -74,16 +75,21 @@ class word_counter:
 		多行注释统计
 		'''
 		multi_lines = 0
+		del_lines = 0
 		multi_pattern = re.compile('/\*+[^\*]+\*/')
 		single_in_multi_pattern = re.compile('//.*')
+		del_pattern = re.compile('"[^"]*/\*[^"]*\*/')
 		tmp_result = multi_pattern.findall(string)
 		for result1 in tmp_result:
-			if len(single_in_multi_pattern.findall(result1)) == 1:
-				self.single_comment -= 1
+			self.single_comment -= len(single_in_multi_pattern.findall(result1))
 			for x in result1:
 				if x == '\n':
 					multi_lines+=1
-		return multi_lines
+		del_result = del_pattern.findall(string)
+		for x in del_result:
+			if x == '\n':
+				del_lines += 1
+		return multi_lines - del_lines
 
 	def file_process(self,file):
 		'''
@@ -96,8 +102,8 @@ class word_counter:
 			print('null file!')
 			return
 		else:
-			self.multi_comment = self.multi_comment_count(self.file_string)
-			self.single_comment = self.single_comment_count(self.file_string)
+			self.multi_comment += self.multi_comment_count(self.file_string)
+			self.single_comment += self.single_comment_count(self.file_string)
 			self.char_num += self.char_count(self.file_string)
 			self.word_num += self.word_count(self.file_string)
 			(self.lines,self.nullline) = self.line_count(self.file_string)
