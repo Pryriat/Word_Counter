@@ -8,6 +8,7 @@ from wc_class import word_counter
 class wc_ui(QDialog):
     def __init__(self, parent=None):
         super().__init__()
+        self.setMinimumSize(640,480)
         self.opt = opt = {'a':True}
         self.wc = word_counter(self.opt)
         self.setWindowTitle('Word Counter by Chernobyl')
@@ -37,6 +38,8 @@ class wc_ui(QDialog):
 
     def selectfile(self):
         file_name = QFileDialog.getOpenFileName(self,"select file ","C:\\","c source files(*.c);;cpp source files(*.cpp);;header files(*.h)")
+        if len(file_name[0]) == 0:
+            return
         self.wc.file_process(file_name[0])
         self.file_label.setText('file: %s'%(file_name[0]))
         self.is_null_label.setText('isnull: %s'%(str(self.wc.is_null)))

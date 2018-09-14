@@ -131,6 +131,3 @@ class word_counter:
 		file_list = glob.glob(self.opt['f'])
 		for x in file_list:
 			self.file_process(x)
-	def ui_main(self):
-		mw = QDialog()
-		mw.setWindowTitle('Word Counter by Chernobyl')
